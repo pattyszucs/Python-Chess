@@ -9,17 +9,23 @@ class Board(list):
         self.legal_moves = []
         self.colnames = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
 
-        # setup = [
-        #     ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
-        #     ['P' for i in range(8)]
-        # ]
         setup = [
-            ['.' for i in range(8)],
-            ['.', 'K', '.', '.', '.', '.', '.', '.']
+            ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
+            ['P' for i in range(8)]
         ]
-
         self.b[:2] = setup
         self.b[6:] = reversed([list(map(str.lower, row)) for row in setup])
+
+        # self.b = [
+        #     ['.', '.', '.', '.', '.', '.', '.', '.'],
+        #     ['.', '.', '.', '.', '.', '.', '.', '.'],
+        #     ['.', '.', 'P', '.', '.', '.', '.', '.'],
+        #     ['.', '.', '.', '.', '.', '.', '.', '.'],
+        #     ['.', '.', '.', '.', '.', '.', '.', '.'],
+        #     ['.', '.', '.', '.', '.', '.', '.', '.'],
+        #     ['.', '.', '.', '.', '.', '.', '.', '.'],
+        #     ['.', '.', '.', '.', '.', '.', '.', '.']
+        # ]
 
     def form_legal_moves(self, is_white):
         b = self.b
@@ -41,7 +47,31 @@ class Board(list):
             return moves
 
         def pawn_moves(row, col):
-            pass
+            moves = []
+            try:
+                forward = b[row-direction][col]
+                if not self._is_piece(forward):
+                    moves.append((row-direction, col))
+                    if ((row == 1 and not is_white) or (row == 6 and is_white)) and not self._is_piece(b[row-(direction*2)][col]):
+                        moves.append((row-(direction*2), col))
+            except:
+                pass
+
+            left_attack = b[row-direction][col-1]
+            if self._is_piece(left_attack) and self._is_white(left_attack) != is_white:
+                moves.append((row-direction, col-1))
+            try:
+                right_attack = b[row-direction][col+1]
+                if self._is_piece(right_attack) and self._is_white(right_attack) != is_white:
+                    moves.append((row-direction, col+1))
+            except:
+                pass
+
+            # clear out-of-bounds
+            moves = [move for move in moves if (
+                move[0] > 0 and move[0] <= 7 and move[1] > 0 and move[1] <= 7)]
+
+            return moves
 
         def rook_moves(row, col):
             possibility_tree = []
@@ -76,11 +106,22 @@ class Board(list):
 
         def bishop_moves(row, col):
             possibility_tree = []
-            # for i in range()
-            pass
+            possibility_tree.append([
+                (row+dif, col+dif) for dif in range(1, 8-row)
+            ])
+            possibility_tree.append([
+                (row+dif, col-dif) for dif in range(1, 8-row)
+            ])
+            possibility_tree.append([
+                (row-dif, col+dif) for dif in range(1, 8-row)
+            ])
+            possibility_tree.append([
+                (row-dif, col-dif) for dif in range(1, 8-row)
+            ])
+            return flatten_possibility_tree(possibility_tree)
 
         def queen_moves(row, col):
-            pass
+            return rook_moves(row, col) + bishop_moves(row, col)
 
         def king_moves(row, col):
             possibility_tree = []
@@ -108,10 +149,6 @@ class Board(list):
                 print(moves)
                 legal_moves += moves
         return legal_moves
-
-    @staticmethod
-    def _is_color(tile, is_white):
-        return tile.islower() == is_white
 
     @staticmethod
     def _is_white(tile):
@@ -142,4 +179,4 @@ class Board(list):
 if __name__ == '__main__':
     a = Board()
     print(a)
-    a.form_legal_moves(False)
+    a.form_legal_moves(True)
