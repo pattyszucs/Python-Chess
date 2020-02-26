@@ -7,7 +7,8 @@ class Board(list):
     def __init__(self):
         self.b = [['.' for i in range(8)] for j in range(8)]
         self.legal_moves = []
-        self.colnames = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+        self.colnames = 'abcdefgh'
+        self.is_white_turn = True
 
         setup = [
             ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
@@ -15,6 +16,7 @@ class Board(list):
         ]
         self.b[:2] = setup
         self.b[6:] = reversed([list(map(str.lower, row)) for row in setup])
+        self.legal_moves = self.form_legal_moves()
 
         # self.b = [
         #     ['.', '.', '.', '.', '.', '.', '.', '.'],
@@ -27,7 +29,8 @@ class Board(list):
         #     ['.', '.', '.', '.', '.', '.', '.', '.']
         # ]
 
-    def form_legal_moves(self, is_white):
+    def form_legal_moves(self):
+        is_white = self.is_white_turn
         b = self.b
         legal_moves = []
         direction = int(is_white) * 2 - 1
@@ -113,10 +116,10 @@ class Board(list):
                 (row+dif, col-dif) for dif in range(1, 8-row)
             ])
             possibility_tree.append([
-                (row-dif, col+dif) for dif in range(1, 8-row)
+                (row-dif, col+dif) for dif in range(1, row)
             ])
             possibility_tree.append([
-                (row-dif, col-dif) for dif in range(1, 8-row)
+                (row-dif, col-dif) for dif in range(1, row)
             ])
             return flatten_possibility_tree(possibility_tree)
 
@@ -145,9 +148,10 @@ class Board(list):
                 if not self._is_piece(cur) or self._is_white(cur) != is_white:
                     continue
                 moves = moves_chooser[cur.lower()](row_index, col_index)
-                print(cur)
-                print(moves)
-                legal_moves += moves
+                # print(cur)
+                # print(moves)
+                legal_moves += [(row_index, col_index, move[0], move[1])
+                                for move in moves]
         return legal_moves
 
     @staticmethod
@@ -157,6 +161,24 @@ class Board(list):
     @staticmethod
     def _is_piece(tile):
         return tile is not None and tile != '.'
+
+    def move(self, move):
+        # move should be formatted like a2a4
+        from_coord = (int(move[1]), self.colnames.index(move[0].lower()))
+        to_coord = (int(move[3]), self.colnames.index(move[2].lower()))
+        return self.move_by_coords((from_coord[0], from_coord[1], to_coord[0], to_coord[1]))
+
+    def move_by_coords(self, coord):
+        self.b[coord[2]][coord[3]] = self.b[coord[0]][coord[1]]
+        self.b[coord[0]][coord[1]] = '.'
+        self.is_white_turn = not self.is_white_turn
+        self.legal_moves = self.form_legal_moves()
+
+    def is_check(self):
+        cur_moves = self.legal_moves
+        self.is_white_turn = not self.is_white_turn
+        enemy_moves = self.form_legal_moves()
+        self.is_white_turn = not self.is_white_turn
 
     def __getitem__(self, key):
         return self.b[key]
@@ -178,5 +200,7 @@ class Board(list):
 
 if __name__ == '__main__':
     a = Board()
+    print(a.move('e6e4'))
+    print(a.move('e1e3'))
+    print(a.form_legal_moves())
     print(a)
-    a.form_legal_moves(True)
