@@ -17,9 +17,10 @@ if __name__ == '__main__':
     b = Board()
     ai = AI(b, False)
 
-    print(b)
-
-    b.move('e6e4')
-    print(b)
-    ai.make_move()
-    print(b)
+    while True:
+        print(b)
+        print('Your move: ', end='')
+        user_move = input()
+        b.move(user_move)
+        print(b)
+        ai.make_move()
