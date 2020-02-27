@@ -8,8 +8,23 @@ class AI():
 
     def make_move(self):
         legal_moves = self.b.legal_moves
-        move = legal_moves[random.randrange(len(legal_moves))]
-        self.b.move_by_coords(move)
+        best_move = legal_moves[random.randrange(len(legal_moves))]
+        best_points = 0
+        # find move that maximizes points
+        for move in legal_moves:
+            moved_b = self.b.clone()
+            moved_b.move_by_coords(move)
+
+            points = moved_b.sum_points()
+            self_points = points[0]
+            if not self.is_white:
+                self_points = points[1]
+
+            if self_points > best_points:
+                best_points = self_points
+                best_move = move
+
+        self.b.move_by_coords(best_move)
 
 
 if __name__ == '__main__':
