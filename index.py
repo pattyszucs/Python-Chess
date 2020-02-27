@@ -173,6 +173,11 @@ class Board(list):
         self.b[coord[0]][coord[1]] = '.'
         self.is_white_turn = not self.is_white_turn
         self.legal_moves = self.form_legal_moves()
+        points = self.sum_points()
+        if points[0] >= 100:
+            print('WHITE HAS WON THE GAME!')
+        if points[1] >= 100:
+            print('BLACK HAS WON THE GAME!')
 
     def sum_points(self):
         point_chooser = {
@@ -217,8 +222,8 @@ class Board(list):
 
 if __name__ == '__main__':
     a = Board()
-    print(a.move('e6e4'))
+    print(a.move('e6e0'))
     print(a.move('e1e3'))
-    print(a.form_legal_moves())
+    print(a.legal_moves)
     print(a.sum_points())
     print(a)
