@@ -1,3 +1,4 @@
+import random
 
 
 class AI():
@@ -6,7 +7,9 @@ class AI():
         self.is_white = is_white
 
     def make_move(self):
-        pass
+        legal_moves = self.b.legal_moves
+        move = legal_moves[random.randrange(len(legal_moves))]
+        self.b.move_by_coords(move)
 
 
 if __name__ == '__main__':
