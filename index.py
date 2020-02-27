@@ -163,7 +163,7 @@ class Board(list):
         return tile is not None and tile != '.'
 
     def move(self, move):
-        # move should be formatted like a2a4
+        # move should be formatted as 'a2a4'
         from_coord = (int(move[1]), self.colnames.index(move[0].lower()))
         to_coord = (int(move[3]), self.colnames.index(move[2].lower()))
         return self.move_by_coords((from_coord[0], from_coord[1], to_coord[0], to_coord[1]))
@@ -174,11 +174,28 @@ class Board(list):
         self.is_white_turn = not self.is_white_turn
         self.legal_moves = self.form_legal_moves()
 
-    def is_check(self):
-        cur_moves = self.legal_moves
-        self.is_white_turn = not self.is_white_turn
-        enemy_moves = self.form_legal_moves()
-        self.is_white_turn = not self.is_white_turn
+    def sum_points(self):
+        point_chooser = {
+            'p': 1,
+            'r': 5,
+            'n': 3,
+            'b': 3,
+            'q': 9,
+            'k': 100
+        }
+        points = [139, 139]  # total points available
+
+        b = self.b
+        for row in b:
+            for tile in row:
+                if not self._is_piece(tile):
+                    continue
+                value = point_chooser[tile.lower()]
+                if self._is_white(tile):
+                    points[1] -= value
+                else:
+                    points[0] -= value
+        return points
 
     def __getitem__(self, key):
         return self.b[key]
@@ -203,4 +220,5 @@ if __name__ == '__main__':
     print(a.move('e6e4'))
     print(a.move('e1e3'))
     print(a.form_legal_moves())
+    print(a.sum_points())
     print(a)
