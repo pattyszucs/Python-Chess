@@ -169,6 +169,7 @@ class Board(list):
         return self.move_by_coords((from_coord[0], from_coord[1], to_coord[0], to_coord[1]))
 
     def move_by_coords(self, coord):
+        # format to: (start row, start col, end row, end col)
         self.b[coord[2]][coord[3]] = self.b[coord[0]][coord[1]]
         self.b[coord[0]][coord[1]] = '.'
         self.is_white_turn = not self.is_white_turn
@@ -202,6 +203,14 @@ class Board(list):
                     points[0] -= value
         return points
 
+    def clone(self):
+        clone = Board()
+        clone.b = self.b
+        clone.legal_moves = self.legal_moves
+        clone.colnames = self.colnames
+        clone.is_white_turn = self.is_white_turn
+        return clone
+
     def __getitem__(self, key):
         return self.b[key]
 
@@ -227,3 +236,5 @@ if __name__ == '__main__':
     print(a.legal_moves)
     print(a.sum_points())
     print(a)
+
+    print(a.clone())
