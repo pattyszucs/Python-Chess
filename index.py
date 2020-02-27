@@ -1,4 +1,5 @@
 from colorama import Fore, Back, Style
+from copy import deepcopy
 # import chess
 # board = chess.Board()
 
@@ -205,9 +206,9 @@ class Board(list):
 
     def clone(self):
         clone = Board()
-        clone.b = self.b
+        clone.b = deepcopy(self.b)
         clone.legal_moves = self.legal_moves
-        clone.colnames = self.colnames
+        clone.colnames = deepcopy(self.colnames)
         clone.is_white_turn = self.is_white_turn
         return clone
 
