@@ -73,7 +73,7 @@ class Board(list):
 
             # clear out-of-bounds
             moves = [move for move in moves if (
-                move[0] > 0 and move[0] <= 7 and move[1] > 0 and move[1] <= 7)]
+                move[0] >= 0 and move[0] <= 7 and move[1] >= 0 and move[1] <= 7)]
 
             return moves
 
@@ -180,6 +180,7 @@ class Board(list):
             print('WHITE HAS WON THE GAME!')
         if points[1] >= 100:
             print('BLACK HAS WON THE GAME!')
+        return self
 
     def sum_points(self):
         point_chooser = {
